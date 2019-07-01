@@ -126,6 +126,7 @@ export class ProfileSettingsPage {
       this.navCtrl.insertPages(0, [{page: 'LanguageSettingsPage'}, {page: 'UserTypeSelectionPage'}]);
     }
     this.getSyllabusDetails();
+    console.log('changerolereq',this.navParams.get('isChangeRoleRequest'));
   }
 
   ionViewWillLeave() {
@@ -174,7 +175,7 @@ export class ProfileSettingsPage {
    * Initializes form and assigns default values from the profile object
    */
   initUserForm() {
-    if (this.navParams.get('isChangeRoleRequest')) {
+    if (!this.navParams.get('isChangeRoleRequest')) {
       this.userForm = this.fb.group({
         syllabus: [[]],
         boards: [[]],
@@ -197,7 +198,6 @@ export class ProfileSettingsPage {
   getSyllabusDetails() {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
-
     const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
       language: this.translate.currentLang,
       requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
@@ -210,7 +210,25 @@ export class ProfileSettingsPage {
           result.forEach(element => {
             // renaming the fields to text, value and checked
             const value = {'name': element.name, 'code': element.identifier};
-            this.syllabusList.push(value);
+            //this.syllabusList.push(value);
+          });
+          const frameworkDetailsRequest: FrameworkDetailsRequest = {
+            frameworkId: 'niit_tv',
+            requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+          };
+          this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+            .then((framework: Framework) => {
+              this.categories = framework.categories;
+              console.log('niit_tv categories',this.categories);
+              this.syllabusList = framework.categories[1].terms;
+              this.mediumList = framework.categories[2].terms;
+              this.gradeList = framework.categories[0].terms;
+
+              this.resetForm(0, false);
+            }).catch(error => {
+            console.error('Error', error);
+            this.loader.dismiss();
+            this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
           });
           this.loader.dismiss();
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
@@ -472,6 +490,13 @@ export class ProfileSettingsPage {
   }
 
   submitEditForm(formVal, loader): void {
+    
+    formVal.syllabus = 'niit_tv';
+    if(typeof formVal.boards === 'string') {
+      const value = formVal.boards;
+      formVal.boards = [value];
+    }
+
     const req: Profile = {
       ...this.profile,
       board: formVal.boards,
@@ -500,7 +525,7 @@ export class ProfileSettingsPage {
           }
         }
       });
-    }
+    }console.log('req for updateprofile',req);
     this.profileService.updateProfile(req).toPromise()
       .then((res: any) => {
         if (req.profileType === ProfileType.TEACHER) {

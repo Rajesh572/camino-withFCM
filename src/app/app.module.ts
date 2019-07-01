@@ -35,6 +35,7 @@ import { ContainerService } from '@app/service/container.services';
 import { DirectivesModule } from '@app/directives/directives.module';
 /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
 import { FCM } from '@ionic-native/fcm';
+import { FcmProvider } from '../providers/fcm/fcm';
 /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -337,7 +338,8 @@ export const sunbirdSdkFactory =
   /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
     ...sunbirdSdkServicesProvidersFactory(),
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true }
+    { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true },
+    FcmProvider
   ],
   exports: [
     BroadcastComponent

@@ -137,9 +137,10 @@ export class PageFilter {
       frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
     }
     let index = 0;
+    frameworkId = 'niit_tv';
     for (const element of this.filters) {
       try {
-        if (!element.frameworkCategory && this.pageId === PageId.COURSE_PAGE_FILTER) {
+        if (element.frameworkCategory && this.pageId === PageId.COURSE_PAGE_FILTER) {
           await this.getRootOrganizations(index);
         } else {
           await this.getFrameworkData(frameworkId, element.code, index);

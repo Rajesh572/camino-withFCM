@@ -49,7 +49,7 @@ import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
-import { FCM } from '@ionic-native/fcm';
+import { FcmProvider } from '../providers/fcm/fcm';
 /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
 @Component({
   templateUrl: 'app.html',
@@ -108,7 +108,7 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
-    private fcm : FCM,
+    private fcm : FcmProvider,
     private alertController : AlertController
     /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
   ) {
@@ -140,28 +140,23 @@ export class MyApp implements OnInit, AfterViewInit {
       this.handleBackButton();
     });
     /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
-    this.fcm.getToken().then((token) => {
-      console.log('token is : ',token);
-    }).catch((err) => {
-      console.log('error is',err)
-    });    this.fcm.onTokenRefresh().subscribe(token => {
-      console.log('refreshed token : ',token);
-    },(err) => {
-      console.log('error on subscriptoin',err);
-    });    this.fcm.onNotification().subscribe(data => {
-      console.log(data);
-      if (data.wasTapped) {
-        console.log(data,'Received in background');
-      } else {
-        console.log(data,'Received in foreground');
-        const alert = this.alertController.create({
-          title: data.title,
-          message: data.body,
-          buttons: ['ok']
-        });
-       // alert.present();
+
+    this.fcm.onNotifications().subscribe((data) => {
+      console.log('data from notification',data);
+
+      if(data.wasTapped) {
+        console.log('received in background');
       }
-    },error => {console.log('error from notification ',error)});
+      else {
+        console.log('received in foreground');
+        let newToast = this.toastCtrl.create({
+          message: data['body'],
+          duration: 3000,
+          position:'bottom'
+        });
+        newToast.present();
+      }
+    });
     /* Sunbird-Implementation-Team-Gurgaon-NehaVerma */
   }
 
@@ -349,6 +344,19 @@ export class MyApp implements OnInit, AfterViewInit {
 
   private async navigateToAppropriatePage() {
     const session = await this.authService.getSession().toPromise();
+
+
+/*------------------------------------------------------------------------------------*/
+if (session) {
+  this.fcm.setSessionInfo(session);
+  this.fcm.setUserAuthToken();
+  setTimeout(()=>{
+    this.fcm.checkToken();
+  },2000)
+}
+/*------------------------------------------------------------------------------------*/
+
+
     console.log(`Platform Session`, session);
     if (!session) {
       console.log(`Success Platform Session`, session);

@@ -175,6 +175,7 @@ export class GuestEditProfilePage {
     header.showHeader = false;
     this.headerService.updatePageConfig(header);
     this.getSyllabusDetails();
+    this.resetForm(0,false);
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
     }, 10);
@@ -293,7 +294,7 @@ export class GuestEditProfilePage {
           result.forEach(element => {
             // renaming the fields to text, value and checked
             const value = { 'name': element.name, 'code': element.identifier };
-            this.syllabusList.push(value);
+            //this.syllabusList.push(value);
           });
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
@@ -306,6 +307,10 @@ export class GuestEditProfilePage {
                 this.isFormValid = true;
                 // loader.dismiss();
                 this.categories = framework.categories;
+                this.syllabusList = this.categories[1].terms;
+                this.gradeList = this.categories[0].terms;
+                this.mediumList = this.categories[2].terms;
+                this.subjectList = this.categories[3].terms;
 
                 this.resetForm(0, false);
 
@@ -583,6 +588,12 @@ export class GuestEditProfilePage {
     req.source = this.profile.source;
     req.createdAt = this.profile.createdAt;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
+
+
+    if(typeof req.board == 'string') {
+      const board = [req.board];
+      req.board = board;
+    }
 
     if (formVal.grades && formVal.grades.length > 0) {
       formVal.grades.forEach(gradeCode => {

@@ -39,6 +39,7 @@ import {
 } from '../../service/telemetry-constants';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
+import {FcmProvider} from '../../providers/fcm/fcm'
 
 @Component({
   selector: 'page-onboarding',
@@ -70,7 +71,8 @@ export class OnboardingPage {
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private fcm: FcmProvider
   ) {
 
     this.slides = [
@@ -182,6 +184,16 @@ export class OnboardingPage {
     const that = this;
     return new Promise<string>((resolve, reject) => {
       that.authService.getSession().toPromise().then((session: OAuthSession) => {
+
+        /*------------------------------------------------------------------------------------*/
+        console.log('session from onboarding',session);
+        this.fcm.setSessionInfo(session);
+        this.fcm.setUserAuthToken();
+        setTimeout(()=>{
+          this.fcm.checkToken();
+        },2000)
+        /*------------------------------------------------------------------------------------*/
+
         if (session === undefined || session == null) {
           reject('session is null');
         } else {

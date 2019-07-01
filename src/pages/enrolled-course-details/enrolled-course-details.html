@@ -79,21 +79,21 @@
 
 				<!-- Sunbird-Implementation-Team-Gurgaon-NehaVerma -->
 				<div *ngIf="course?.board" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'BOARD_CAMINO' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
 					<span class="text-gray-color">{{course?.board}}</span>
 				</div>
 				<div *ngIf="course?.medium" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM_CAMINO' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
 					<span class="text-gray-color">{{course?.medium | csa }}</span>
 				</div>
 				<div *ngIf="course?.gradeLevel?.length" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'CLASS_CAMINO' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
 					<span class="text-gray-color">{{course?.gradeLevel}}</span>
 					<!-- </span> -->
 				</div>
 				<div *ngIf="course?.subject" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'SUBJECTS_CAMINO' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'SUBJECTS' | translate }}</div>
 					<span class="text-gray-color">{{course?.subject | csa }}</span>
 				</div>
 					<!--Changes according to Camino web 

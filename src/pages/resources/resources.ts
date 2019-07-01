@@ -510,6 +510,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
     }
     this.getGroupByPageReq.mode = 'hard';
+    this.getGroupByPageReq.channel=['0127053482034872320'];
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
     this.getGroupByPage(isAfterLanguageChange);

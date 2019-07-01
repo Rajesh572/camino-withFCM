@@ -136,13 +136,16 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
     }
     this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
       .then((res: any) => {
-        this.profile = res;
+        res.syllabus = ['niit_tv'];
+        this.profile = res; console.log('res from guestprofile',res);
+        this.boards = this.profile.board[0];
+        this.getFrameworkDetails('niit_tv');
         this.getSyllabusDetails();
         setTimeout(() => {
           if (refresher) { refresher.complete(); }
         }, 500);
       })
-      .catch(() => {
+      .catch((e) => {console.log('error from refreshprofile',e);
         this.loader.dismiss();
       });
   }
@@ -215,17 +218,16 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
     this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
       .then((framework: Framework) => {
         this.categories = framework.categories;
-
-        if (this.profile.board && this.profile.board.length) {
-          this.boards = this.getFieldDisplayValues(this.profile.board, 0);
+        if (this.profile.board && this.profile.board.length) {console.log('board');
+          this.boards = this.getFieldDisplayValues(this.profile.board, 1);
         }
-        if (this.profile.medium && this.profile.medium.length) {
-          this.medium = this.getFieldDisplayValues(this.profile.medium, 1);
+        if (this.profile.medium && this.profile.medium.length) {console.log('medium');
+          this.medium = this.getFieldDisplayValues(this.profile.medium, 2);
         }
-        if (this.profile.grade && this.profile.grade.length) {
-          this.grade = this.getFieldDisplayValues(this.profile.grade, 2);
+        if (this.profile.grade && this.profile.grade.length) {console.log('grade');
+          this.grade = this.getFieldDisplayValues(this.profile.grade, 0);
         }
-        if (this.profile.subject && this.profile.subject.length) {
+        if (this.profile.subject && this.profile.subject.length) {console.log('subject');
           this.subjects = this.getFieldDisplayValues(this.profile.subject, 3);
         }
 
@@ -234,6 +236,7 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   }
 
   getFieldDisplayValues(field: Array<any>, catIndex: number): string {
+    console.log('categ from dispvales',this.categories);
     const displayValues = [];
     this.categories[catIndex].terms.forEach(element => {
       if (_.includes(field, element.code)) {

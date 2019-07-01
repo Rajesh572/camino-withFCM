@@ -387,7 +387,6 @@ export class SearchPage implements  OnDestroy {
     this.showLoader = true;
 
     (<any>window).cordova.plugins.Keyboard.close();
-
     const contentSearchRequest: ContentSearchCriteria = {
       searchType: SearchType.SEARCH,
       query: this.searchKeywords,
@@ -395,7 +394,9 @@ export class SearchPage implements  OnDestroy {
       facets: Search.FACETS,
       audience: this.audienceFilter,
       mode: 'soft',
-      framework: this.currentFrameworkId,
+      framework: 'niit_tv',
+      channel: ['0127053482034872320'],
+      offset: 0,
       languageCode: this.selectedLanguageCode
     };
 

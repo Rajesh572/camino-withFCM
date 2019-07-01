@@ -1,15 +1,18 @@
-import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, Inject, AfterViewChecked } from '@angular/core';
 import { Events, App, MenuController } from 'ionic-angular';
 import { CommonUtilService, AppGlobalService, UtilityService } from '@app/service';
-import { SharedPreferences } from 'sunbird-sdk';
+import { SharedPreferences, InteractSubType } from 'sunbird-sdk';
 import { PreferenceKey, GenericAppConfig } from '../../app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {FcmProvider} from '../../providers/fcm/fcm'
 
 @Component({
   selector: 'application-header',
   templateUrl: 'application-header.html',
 })
-export class ApplicationHeaderComponent implements OnInit {
+export class ApplicationHeaderComponent implements OnInit,AfterViewChecked {
   chosenLanguageString: string;
   selectedLanguage: string;
   @Input() headerConfig: any = false;
@@ -27,13 +30,23 @@ export class ApplicationHeaderComponent implements OnInit {
     private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private utilityService: UtilityService) {
+    private utilityService: UtilityService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private fcm:FcmProvider) {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
       if (res && res.selectedLanguage) {
         this.setLanguageValue();
       }
     });
+  }
+
+  userSession = false;
+
+  ngAfterViewChecked() {
+  if(this.isLoggedIn) {
+    this.userSession = true; 
+  } else return 
   }
 
   ngOnInit() {
@@ -101,4 +114,18 @@ export class ApplicationHeaderComponent implements OnInit {
     this.sideMenuItemEvent.emit({ menuItem });
   }
 
+  async subscribeTo() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'subscribe-clicked',// subtype of event
+      Environment.HOME,
+      PageId.COURSES
+      );
+
+    console.log('clicked');
+if(this.fcm.sessionInfo) {
+  console.log('register called');
+await this.fcm.registerDevice();
+}
+    else console.log('no session available');
+  }
 }
